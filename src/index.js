@@ -1,30 +1,32 @@
-import React, { useEffect, useRef } from "react";
+import React from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 
-const useClick = (onClick) => {
-	const element = useRef();
-	useEffect(() => {
-		//componentDidMount()
-		if (element.current && typeof onClick === "function") {
-			element.current.addEventListener("click", onClick);
+const useConfirm = (message = "", onConfirm, onCancel) => {
+	if (onConfirm && typeof onConfirm !== "function") {
+		return;
+	}
+	if (onCancel && typeof onCancel !== "function") {
+		return;
+	}
+	const confirmAction = () => {
+		if (window.confirm(message)) {
+			onConfirm();
+		} else {
+			onCancel();
 		}
-		//componentWillUnmount()
-		return () => {
-			if (element.current && typeof onClick === "function") {
-				element.current.removeEventListener("click", onClick);
-			}
-		};
-	}, []); //dependencyList를 통해 componentDidUpdate()일 경우 호출 안함.
-	return element;
+	};
+	return confirmAction;
 };
 
 const App = () => {
-	const sayHello = () => console.log("say hello!");
-	const title = useClick(sayHello);
+	const deleteWorld = () => console.log("Deleting the world!!");
+	const abort = () => console.log("Aborted");
+	const confirmDelete = useConfirm("Are you sure", deleteWorld, abort);
 	return (
 		<div className="App">
-			<h1 ref={title}>Hello</h1>
+			<h1>Hello</h1>
+			<button onClick={confirmDelete}>Delete the world!</button>
 		</div>
 	);
 };
